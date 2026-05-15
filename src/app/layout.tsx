@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/components/AuthProvider";
+import Header from "@/components/Header";
 
 export default function RootLayout({
   children,
@@ -34,6 +35,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
+          <Header />
           {children}
         </AuthProvider>
       </body>

@@ -7,8 +7,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { addLink, getUserLinks, deleteLink, updateLink } from "@/lib/db";
 
 export default function MyPage() {
-  const { user } = useAuth();
-  const uid = user?.uid || "test-user-uid"; // Fallback for test mode
+  const { user, loading: authLoading } = useAuth();
 
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
@@ -18,8 +17,12 @@ export default function MyPage() {
   // Read: Fetch links from Firestore on mount
   useEffect(() => {
     const fetchLinks = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
       try {
-        const fetchedLinks = await getUserLinks(uid);
+        const fetchedLinks = await getUserLinks(user.uid);
         // Explicitly map fetchedLinks to match LinkItem properties exactly if needed, 
         // though our schema aligns well already.
         setLinks(fetchedLinks);
@@ -31,7 +34,7 @@ export default function MyPage() {
     };
     
     fetchLinks();
-  }, [uid]);
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,10 +56,10 @@ export default function MyPage() {
 
     try {
       // Create: Save link to Firestore
-      await addLink(uid, url, title);
+      await addLink(user!.uid, url, title);
       
       // Re-fetch list to get the generated ID and updated list
-      const updatedLinks = await getUserLinks(uid);
+      const updatedLinks = await getUserLinks(user!.uid);
       setLinks(updatedLinks);
       
       setTitle("");
@@ -69,7 +72,7 @@ export default function MyPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteLink(uid, id);
+      await deleteLink(user!.uid, id);
       setLinks(links.filter((link) => link.id !== id));
     } catch (error) {
       console.error("Failed to delete link:", error);
@@ -79,13 +82,24 @@ export default function MyPage() {
 
   const handleUpdate = async (id: string, data: Partial<LinkItem>) => {
     try {
-      await updateLink(uid, id, data);
+      await updateLink(user!.uid, id, data);
       setLinks(links.map(link => link.id === id ? { ...link, ...data } : link));
     } catch (error) {
       console.error("Failed to update link:", error);
       alert("링크 수정에 실패했습니다.");
     }
   };
+
+  if (authLoading) return <div className="p-10 text-center text-gray-500">인증 정보 확인 중...</div>;
+
+  if (!user) {
+    return (
+      <div className="max-w-md mx-auto p-10 mt-10 text-center bg-gray-50 rounded-lg shadow-sm border border-dashed">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">로그인이 필요합니다</h2>
+        <p className="text-sm text-gray-600 mb-6">내 전용 링크를 관리하려면 우측 상단의<br/>Google 로그인 버튼을 클릭하세요.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto p-6 space-y-8">
