@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import LinkList, { LinkItem } from "@/components/LinkList";
 import { useAuth } from "@/components/AuthProvider";
-import { addLink, getUserLinks, deleteLink } from "@/lib/db";
+import { addLink, getUserLinks, deleteLink, updateLink } from "@/lib/db";
 
 export default function MyPage() {
   const { user } = useAuth();
@@ -77,6 +77,16 @@ export default function MyPage() {
     }
   };
 
+  const handleUpdate = async (id: string, data: Partial<LinkItem>) => {
+    try {
+      await updateLink(uid, id, data);
+      setLinks(links.map(link => link.id === id ? { ...link, ...data } : link));
+    } catch (error) {
+      console.error("Failed to update link:", error);
+      alert("링크 수정에 실패했습니다.");
+    }
+  };
+
   return (
     <div className="max-w-md mx-auto p-6 space-y-8">
       {/* 상단: 제목 */}
@@ -128,7 +138,7 @@ export default function MyPage() {
         {loading ? (
           <p className="text-sm text-gray-500 text-center py-4">로딩 중...</p>
         ) : (
-          <LinkList links={links} onDelete={handleDelete} />
+          <LinkList links={links} onDelete={handleDelete} onUpdate={handleUpdate} />
         )}
       </section>
     </div>
