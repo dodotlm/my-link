@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // User Profiles
+    match /users/{userId} {
+      // Anyone can read profiles (to show public profile page)
+      allow read: if true;
+      // Only the owner can write/update their own profile
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // User Links
+      match /links/{linkId} {
+        // Anyone can read links (to show on public profile page)
+        allow read: if true;
+        // Only the owner can write/update their own links
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+  }
+}

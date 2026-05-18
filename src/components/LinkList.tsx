@@ -5,6 +5,7 @@ export interface LinkItem {
   id: string;
   title: string;
   url: string;
+  clicks: number;
 }
 
 interface LinkListProps {
@@ -69,6 +70,10 @@ export default function LinkList({ links, onDelete, onUpdate }: LinkListProps) {
                   <a href={link.url} target="_blank" rel="noreferrer" className="text-sm text-blue-500 hover:underline truncate block">
                     {link.url}
                   </a>
+                  <p className="text-xs text-gray-500 mt-1 flex items-center">
+                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    {link.clicks || 0} 클릭
+                  </p>
                 </div>
               )}
 

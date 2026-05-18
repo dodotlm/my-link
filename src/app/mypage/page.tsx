@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import LinkList, { LinkItem } from "@/components/LinkList";
+import ProfileForm from "@/components/ProfileForm";
 import { useAuth } from "@/components/AuthProvider";
 import { addLink, getUserLinks, deleteLink, updateLink } from "@/lib/db";
 
@@ -103,13 +104,29 @@ export default function MyPage() {
 
   return (
     <div className="max-w-md mx-auto p-6 space-y-8">
-      {/* 상단: 제목 */}
+      {/* 통계 섹션 */}
+      <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex justify-around text-center">
+        <div>
+          <p className="text-sm text-gray-500 font-medium">전체 링크</p>
+          <p className="text-3xl font-bold text-gray-800">{links.length}</p>
+        </div>
+        <div className="w-px bg-gray-200"></div>
+        <div>
+          <p className="text-sm text-gray-500 font-medium">총 클릭 수</p>
+          <p className="text-3xl font-bold text-purple-600">
+            {links.reduce((acc, link) => acc + (link.clicks || 0), 0)}
+          </p>
+        </div>
+      </section>
+
       <section>
-        <h1 className="text-2xl font-bold">새 링크 추가</h1>
+        <h2 className="text-xl font-bold mb-4">프로필 관리</h2>
+        <ProfileForm />
       </section>
 
       {/* 중간: 폼 */}
       <section>
+        <h2 className="text-xl font-bold mb-4">새 링크 추가</h2>
         <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
           <div className="space-y-2 flex flex-col">
             <label htmlFor="title" className="text-sm font-medium text-gray-700">

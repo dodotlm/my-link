@@ -1,7 +1,7 @@
 import { db } from "./firebase";
 import { 
   doc, getDoc, setDoc, updateDoc, collection, addDoc, 
-  deleteDoc, getDocs, query, orderBy, where, serverTimestamp 
+  deleteDoc, getDocs, query, orderBy, where, serverTimestamp, increment 
 } from "firebase/firestore";
 import { User } from "firebase/auth";
 
@@ -92,4 +92,11 @@ export const updateLink = async (uid: string, linkId: string, data: Partial<Link
 export const deleteLink = async (uid: string, linkId: string) => {
   const linkRef = doc(db, "users", uid, "links", linkId);
   await deleteDoc(linkRef);
+};
+
+export const incrementLinkClick = async (uid: string, linkId: string) => {
+  const linkRef = doc(db, "users", uid, "links", linkId);
+  await updateDoc(linkRef, {
+    clicks: increment(1)
+  });
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { User, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import { User, onAuthStateChanged, signInWithPopup, signInWithRedirect, GoogleAuthProvider, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { createUserDocument } from "@/lib/db";
 
@@ -42,8 +42,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error signing in with Google", error);
+      if (error.code === 'auth/popup-blocked') {
+        alert("팝업이 차단되어 리다이렉트 방식으로 로그인을 진행합니다.");
+        await signInWithRedirect(auth, provider);
+      } else {
+        alert("로그인 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      }
     }
   };
 
